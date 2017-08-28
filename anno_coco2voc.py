@@ -13,7 +13,7 @@ def instance2xml_base(anno):
             E.database('MS COCO 2014'),
             E.annotation('MS COCO 2014'),
             E.image('Flickr'),
-            E.url(anno['coco_url'])
+            E.url(anno['url'])
         ),
         E.size(
             E.width(anno['width']),
@@ -60,10 +60,11 @@ def parse_instance(content, outdir):
         anno_tree = instance2xml_base(groups[0])
         # if one file have multiple different objects, save it in each category sub-directory
         filenames = []
-        for group in groups:
-            filenames.append(os.path.join(outdir, re.sub(" ", "_", group['category_id']),
-                                    os.path.splitext(name)[0] + ".xml"))
-            anno_tree.append(instance2xml_bbox(group, bbox_type='xyxy'))
+        for group in groups:            
+            if group['category_id'] == "person":
+                filenames.append(os.path.join(outdir, re.sub(" ", "_", group['category_id']),
+                                        os.path.splitext(name)[0] + ".xml"))
+                anno_tree.append(instance2xml_bbox(group, bbox_type='xyxy'))
         for filename in filenames:
             etree.ElementTree(anno_tree).write(filename, pretty_print=True)
         print "Formating instance xml file {} done!".format(name)
